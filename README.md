@@ -18,6 +18,26 @@
 
 ---
 
+## 📊 Remedy Results: Composite Stability Index
+
+<div align="center">
+
+### OLS Baseline vs. Composite Index Model Comparison
+
+<img src="images/ols_comparison.png" alt="Comprehensive comparison of OLS baseline and Composite Index models" width="900" />
+
+**Key Improvements:**
+- ✅ **Multicollinearity reduced 47%**: Condition number from 5,040 → 2,680
+- ✅ **Better model fit**: AIC improved by -8.8 (lower is better)
+- ✅ **Simpler model**: 21 vs 23 predictors
+- ⚠️ **Stability index**: β = -0.020, p = 0.129 (marginal significance)
+
+*The composite approach successfully reduces collinearity while maintaining model performance, though the stability effect on 12-month bone loss remains modest.*
+
+</div>
+
+---
+
 ## Story (clinical framing)
 
 A multi-site practice wants clarity on early stability and 12‑month marginal bone change. At placement we record **Insertion Torque**; we measure **ISQ** at weeks 0/1/2/3/4/6/8; and we have a research proxy for **BIC (%)**. The clinical leads keep asking: "Which lever matters and when?" The statistics keep talking back: **autocorrelation** in repeated ISQ and **multicollinearity** among stability proxies.
