@@ -120,6 +120,49 @@
 
 ---
 
+## 📈 Autocorrelation Lab: ISQ Trajectories Over Time
+
+<div align="center">
+
+### The Classic "Dip and Recovery" Pattern
+
+<img src="images/isq_trajectory_average.png" alt="Average ISQ trajectory showing dip and recovery" width="900" />
+
+**Average Pattern Across 300 Implants:**
+- **Weeks 0-1**: High primary stability (ISQ ≈ 84.3) from mechanical fit
+- **Week 2**: **Stability dip** (ISQ drops to 83.8) as bone remodeling begins
+- **Weeks 3-8**: **Recovery phase** (ISQ rises to 89.0) through osseointegration
+
+<img src="images/isq_trajectories_individual.png" alt="Individual ISQ trajectories showing variability" width="900" />
+
+**Individual Implant Variability:**
+- ✅ Most implants follow the dip-and-recovery pattern
+- ✅ **Smooth trajectories** indicate strong temporal correlation (autocorrelation present!)
+- ✅ Some implants maintain high stability throughout (Type 1 bone, excellent primary stability)
+- ⚠️ All trajectories remain above clinical threshold (ISQ > 65)
+
+### 🚨 Initial OLS Model: Autocorrelation Detected!
+
+**Baseline time-series regression results:**
+- **R² = 0.412**: Model explains 41% of ISQ variance
+- **Durbin-Watson = 0.427**: SEVERE positive autocorrelation (<1.5 indicates problem)
+- **Significant predictors**: Week (+0.87, p<0.001), Torque (+0.26, p<0.001), BIC (+0.27, p<0.001)
+- ❌ **Standard errors are invalid** due to autocorrelation → remedies needed!
+
+**Key Finding:** Consecutive ISQ measurements are **not independent** — if ISQ is high at week 2, it's likely high at week 3. This violates OLS assumptions and requires specialized time-series methods.
+
+### 🔄 Next Steps:
+- 📊 Visualize autocorrelation structure (ACF plot)
+- 🔧 Apply Remedy 1: Lagged ISQ predictors
+- 🔧 Apply Remedy 2: GLS with AR(1) errors
+- 🔧 Apply Remedy 3: HAC robust standard errors
+
+*Autocorrelation Lab in progress...*
+
+</div>
+
+---
+
 ## Story (clinical framing)
 
 A multi-site practice wants clarity on early stability and 12‑month marginal bone change. At placement we record **Insertion Torque**; we measure **ISQ** at weeks 0/1/2/3/4/6/8; and we have a research proxy for **BIC (%)**. The clinical leads keep asking: "Which lever matters and when?" The statistics keep talking back: **autocorrelation** in repeated ISQ and **multicollinearity** among stability proxies.
@@ -157,7 +200,9 @@ implant-stats-lab/
 │   ├── ols_comparison.png               # OLS vs. Composite Index comparison
 │   ├── ridge_lasso_comparison.png       # Ridge & Lasso coefficient analysis
 │   ├── pca_analysis.png                 # PCA variance & loadings visualization
-│   └── final_comparison_all_remedies.png # Comprehensive 4-way comparison
+│   ├── final_comparison_all_remedies.png # Comprehensive 4-way comparison
+│   ├── isq_trajectory_average.png       # Average ISQ dip-and-recovery pattern
+│   └── isq_trajectories_individual.png  # Individual implant trajectories
 ├── models/
 └── src/
     └── __init__.py
@@ -185,12 +230,15 @@ implant-stats-lab/
 **Focus**: ISQ trajectories over 8 weeks (repeated measures)
 
 **Topics Covered**:
-- ✅ ACF plots, Durbin-Watson, Ljung-Box tests
-- ✅ Visualizing dip-and-recovery patterns
-- ✅ Three remedies: Lagged ISQ, GLS AR(1), HAC standard errors
-- ✅ Choosing the right approach for time-series data
+- ✅ Data reshaping (wide → long format with `pd.melt`)
+- ✅ Visualizing ISQ trajectories and dip-and-recovery patterns
+- ✅ Baseline OLS model (R² = 0.412, detected severe autocorrelation)
+- ✅ Durbin-Watson test (0.427 → severe positive autocorrelation!)
+- 🔄 ACF plots and diagnostic tests (in progress)
+- 🔄 Three remedies: Lagged ISQ, GLS AR(1), HAC standard errors (pending)
+- 🔄 Choosing the right approach for time-series data (pending)
 
-**Key Finding**: Positive autocorrelation in repeated ISQ measurements requires correction for valid inference.
+**Key Finding So Far**: Durbin-Watson = 0.427 confirms severe positive autocorrelation in repeated ISQ measurements. Consecutive measurements are strongly correlated (smooth trajectories), violating OLS independence assumption. Standard errors from naive OLS are invalid and require time-series corrections.
 
 ---
 
