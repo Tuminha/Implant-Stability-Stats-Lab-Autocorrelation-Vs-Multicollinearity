@@ -38,6 +38,27 @@
 
 ---
 
+## 📊 Remedy Results: Ridge & Lasso Regularization
+
+<div align="center">
+
+### Regularization-Based Multicollinearity Treatment
+
+<img src="images/ridge_lasso_comparison.png" alt="Ridge and Lasso coefficient comparison" width="900" />
+
+**Key Results:**
+- ✅ **Ridge (α = 100.0)**: Shrinks all coefficients proportionally, RMSE = 0.487, R² = 0.094, retains all 23 predictors
+- ✅ **Lasso (α = 0.010)**: Performs variable selection, RMSE = 0.487, R² = 0.097, **reduces to 11 predictors**
+- ✅ **Stability variables**: Both methods shrink torque, ISQ, and BIC coefficients toward zero, confirming weak individual effects
+- ✅ **Feature selection**: Lasso zeros out 12 variables including `cortical_thickness_mm`, `grafting`, and several bone class indicators
+- ⚠️ **Interpretation**: Superior predictive stability (cross-validated) with fewer predictors, but coefficients cannot be interpreted as causal effects
+
+*Regularization successfully handles multicollinearity while improving generalization. Lasso's automatic feature selection identifies the most informative subset for prediction.*
+
+</div>
+
+---
+
 ## Story (clinical framing)
 
 A multi-site practice wants clarity on early stability and 12‑month marginal bone change. At placement we record **Insertion Torque**; we measure **ISQ** at weeks 0/1/2/3/4/6/8; and we have a research proxy for **BIC (%)**. The clinical leads keep asking: "Which lever matters and when?" The statistics keep talking back: **autocorrelation** in repeated ISQ and **multicollinearity** among stability proxies.
@@ -71,7 +92,9 @@ implant-stats-lab/
 │   ├── 01_multicollinearity_lab.ipynb   # Comprehensive, didactic notebook
 │   └── 02_autocorrelation_lab.ipynb     # Time-series ISQ analysis
 ├── images/
-│   └── correlation_heatmap_stability_proxies.png
+│   ├── correlation_heatmap_stability_proxies.png
+│   ├── ols_comparison.png               # OLS vs. Composite Index comparison
+│   └── ridge_lasso_comparison.png       # Ridge & Lasso coefficient analysis
 ├── models/
 └── src/
     └── __init__.py
@@ -87,10 +110,13 @@ implant-stats-lab/
 **Topics Covered**:
 - ✅ Correlation heatmaps & VIF diagnostics
 - ✅ Condition number analysis (detected: 5,040!)
-- ✅ Three remedies: Composite Index, Ridge/Lasso, PCA
+- ✅ **Remedy 1**: Composite Stability Index (condition number reduced to 2,680)
+- ✅ **Remedy 2**: Ridge regression (α = 100.0, coefficient shrinkage)
+- ✅ **Remedy 3**: Lasso regression (α = 0.010, automatic feature selection → 11 predictors)
+- 🔄 **Remedy 4**: PCA (pending)
 - ✅ Clinical interpretation & decision frameworks
 
-**Key Finding**: All three stability measures non-significant (p > 0.1) when included together due to extreme multicollinearity — despite clinical importance!
+**Key Finding**: All three stability measures non-significant when included together due to extreme multicollinearity. Regularization methods (Ridge/Lasso) provide better predictive performance and handle collinearity automatically, with Lasso identifying the most parsimonious model.
 
 ### 2. [Autocorrelation Lab](notebooks/02_autocorrelation_lab.ipynb)
 **Focus**: ISQ trajectories over 8 weeks (repeated measures)
