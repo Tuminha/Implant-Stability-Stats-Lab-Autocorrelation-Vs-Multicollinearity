@@ -151,13 +151,25 @@
 
 **Key Finding:** Consecutive ISQ measurements are **not independent** — if ISQ is high at week 2, it's likely high at week 3. This violates OLS assumptions and requires specialized time-series methods.
 
-### 🔄 Next Steps:
-- 📊 Visualize autocorrelation structure (ACF plot)
-- 🔧 Apply Remedy 1: Lagged ISQ predictors
-- 🔧 Apply Remedy 2: GLS with AR(1) errors
-- 🔧 Apply Remedy 3: HAC robust standard errors
+### ✅ Solution: Lagged ISQ Model
 
-*Autocorrelation Lab in progress...*
+| Model | R² | Durbin-Watson | Status |
+|-------|-----|---------------|--------|
+| **Baseline OLS** | 0.412 | 0.427 ❌ | Invalid (severe autocorrelation) |
+| **Lagged ISQ** | **0.882** | **1.816** ✅ | **FIXED! Best solution** |
+| **GLS AR(1)** | 0.882 | 1.816 ✅ | Same as OLS (no advantage) |
+| **HAC (Newey-West)** | 0.882 | 1.816 ✅ | Minimal correction (<2% difference) |
+
+**Key Result: Adding lagged ISQ (`isq_lag1`) as a predictor:**
+- ✅ R² nearly doubled: 41% → 88%
+- ✅ Durbin-Watson fixed: 0.427 → 1.816 (near-perfect!)
+- ✅ ACF flattened: All lags now inside confidence interval
+- ✅ isq_lag1 coefficient: 0.894 (t=85.3, p<0.001) — strongest predictor!
+
+**Clinical Interpretation:**
+> "ISQ this week is 89% determined by last week's ISQ, plus a net weekly gain of ~1.3 points (U-shaped dip-and-recovery pattern). Baseline factors (torque, BIC) had their effect at placement, but their influence persists through the ISQ trajectory — once you know last week's ISQ, baseline measurements add little predictive value."
+
+**Statistical Lesson:** Model specification (adding the right predictor) matters more than estimation method. Once lagged ISQ was included, OLS, GLS, and HAC all gave nearly identical results — confirming the model was correctly specified.
 
 </div>
 
@@ -232,13 +244,14 @@ implant-stats-lab/
 **Topics Covered**:
 - ✅ Data reshaping (wide → long format with `pd.melt`)
 - ✅ Visualizing ISQ trajectories and dip-and-recovery patterns
-- ✅ Baseline OLS model (R² = 0.412, detected severe autocorrelation)
-- ✅ Durbin-Watson test (0.427 → severe positive autocorrelation!)
-- 🔄 ACF plots and diagnostic tests (in progress)
-- 🔄 Three remedies: Lagged ISQ, GLS AR(1), HAC standard errors (pending)
-- 🔄 Choosing the right approach for time-series data (pending)
+- ✅ Baseline OLS model (R² = 0.412, Durbin-Watson = 0.427)
+- ✅ ACF plots showing severe Lag 1 autocorrelation (0.80)
+- ✅ **Remedy 1**: Lagged ISQ (R² = 0.882, Durbin-Watson = 1.816) — **BEST SOLUTION**
+- ✅ **Remedy 2**: GLS AR(1) (identical to OLS once lag added)
+- ✅ **Remedy 3**: HAC robust standard errors (<2% difference from OLS)
+- ✅ Complete comparison and clinical interpretation
 
-**Key Finding So Far**: Durbin-Watson = 0.427 confirms severe positive autocorrelation in repeated ISQ measurements. Consecutive measurements are strongly correlated (smooth trajectories), violating OLS independence assumption. Standard errors from naive OLS are invalid and require time-series corrections.
+**Key Finding**: Adding lagged ISQ (`isq_lag1`) as a predictor completely fixed the autocorrelation problem (Durbin-Watson: 0.427 → 1.816) and nearly doubled R² (0.41 → 0.88). The lagged coefficient (0.894) reveals ISQ this week is 89% determined by last week's value. Model specification (adding the right predictor) mattered more than estimation method — once lagged ISQ was included, OLS, GLS, and HAC all gave nearly identical results, confirming correct specification.
 
 ---
 
